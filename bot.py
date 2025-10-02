@@ -6,6 +6,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 import csv
 import os
 
+from keep_alive import keep_alive
+keep_alive()
+
 # === CONFIG ===
 TOKEN = "MTQyMzM4MDIxMzgyNzM3MTA0OA.Gawy1B.XhNzzqN-NuArU_-ArO-ofw32Qo6VaVt_SRir04" # Discord Bot Token
 GOOGLE_SHEET_ID = "1_-mQlKfE-jc1sw8KrAcmm57_W-BviApyj4A1lplvbDk"
