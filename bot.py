@@ -56,7 +56,7 @@ async def delete(ctx):
         await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
         return
 
-    channel = bot.get_channel(CHANNEL_ID)  # always send messages to this channel
+    channel = bot.get_channel(CHANNEL_ID)
     records = sheet.get_all_values()
 
     if len(records) <= 1:  # Assuming row 1 is header
@@ -64,7 +64,7 @@ async def delete(ctx):
         return
 
     try:
-        sheet.delete_row(len(records))
+        sheet.delete_rows(len(records))
         await channel.send("✅ Last record deleted successfully.")
     except Exception as e:
         await channel.send(f"⚠️ Failed to delete the last record: {e}")
