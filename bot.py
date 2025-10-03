@@ -76,7 +76,8 @@ async def stats(ctx):
     if ctx.channel.id != CHANNEL_ID:
         await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
         return
-
+    
+    channel = bot.get_channel(CHANNEL_ID)
     records = sheet.get_all_values()
 
     if len(records) <= 1:
@@ -126,7 +127,8 @@ async def export(ctx):
     if ctx.channel.id != CHANNEL_ID:
         await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
         return
-                    
+    
+    channel = bot.get_channel(CHANNEL_ID)                    
     records = sheet.get_all_values()
     if len(records) == 0:
         await channel.send("⚠️ No data to export.")
