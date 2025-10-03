@@ -16,7 +16,7 @@ CHANNEL_ID = 1423319542310109244
 
 # === GOOGLE SHEETS SETUP ===
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("api-project-757344524795-376bc3b595a4.json", scope)
+creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
 client = gspread.authorize(creds)
 sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
 
@@ -42,8 +42,8 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
     await channel.send(
         f"✅ Log saved:\n"
         f"**User:** {user}\n"
-        f"**% Profit:** {percent}\n"
-        f"**Profit Amount:** {profit}\n"
+        f"**Profit:** {percent}%\n"
+        f"**Profit:** ${profit}\n"
         f"**Coin:** {coin.upper()}\n"
         f"**Direction:** {direction.capitalize()}"
     )
@@ -83,7 +83,7 @@ async def stats(ctx):
     await ctx.send(
         f"📊 **Trading Stats** 📊\n"
         f"Total Trades: **{total_trades}**\n"
-        f"Total Profit: **{total_profit:.2f}**\n"
+        f"Total Profit: **${total_profit:.2f}**\n"
         f"Total Profit %: **{total_perc:.2f}%**"
     )
 
@@ -102,7 +102,7 @@ async def export(ctx):
         writer.writerows(records)
 
     # Send file to Discord
-    await ctx.send("📂 Here are the exported logs:", file=discord.File(filename))
+    await ctx.send(f"📂 {len(records)} logs:", file=discord.File(filename))
 
     # Print to console
     print(f"[EXPORT] Exported {len(records)} rows to {filename}")
