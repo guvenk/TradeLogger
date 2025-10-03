@@ -28,10 +28,6 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # === COMMAND: !log ===
 @bot.command()
 async def log(ctx, percent: float, profit: float, coin: str, direction: str):
-    if ctx.channel.id != CHANNEL_ID:
-        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
-        return
-
     now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M")
     user = str(ctx.author)
 
@@ -40,7 +36,7 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
 
     # Confirmation
     channel = bot.get_channel(CHANNEL_ID)
-    await channel.send(
+    await ctx.send(
         f"✅ Log saved:\n"
         f"**User:** {user}\n"
         f"**Percentage:** {percent}%\n"
@@ -52,36 +48,28 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
 # === COMMAND: !delete ===
 @bot.command()
 async def delete(ctx):
-    if ctx.channel.id != CHANNEL_ID:
-        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
-        return
-
     channel = bot.get_channel(CHANNEL_ID)
     records = sheet.get_all_values()
 
     if len(records) <= 1:  # Assuming row 1 is header
-        await channel.send("⚠️ No records to delete.")
+        await ctx.send("⚠️ No records to delete.")
         return
 
     try:
         sheet.delete_rows(len(records))
-        await channel.send("✅ Last record deleted successfully.")
+        await ctx.send("✅ Last record deleted successfully.")
     except Exception as e:
-        await channel.send(f"⚠️ Failed to delete the last record: {e}")
+        await ctx.send(f"⚠️ Failed to delete the last record: {e}")
 
 
 # === COMMAND: !stats ===
 @bot.command()
 async def stats(ctx):
-    if ctx.channel.id != CHANNEL_ID:
-        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
-        return
-    
     channel = bot.get_channel(CHANNEL_ID)
     records = sheet.get_all_values()
 
     if len(records) <= 1:
-        await channel.send("⚠️ No trades logged yet.")
+        await ctx.send("⚠️ No trades logged yet.")
         return
 
     # Skip header row
@@ -107,12 +95,12 @@ async def stats(ctx):
             continue
 
     if total_trades == 0:
-        await channel.send(f"⚠️ No trades logged yet for **{user}**.")
+        await ctx.send(f"⚠️ No trades logged yet for **{user}**.")
         return
 
     win_rate = (wins / total_trades * 100) if total_trades > 0 else 0.0
 
-    await channel.send(
+    await ctx.send(
         f"📊 **Statistics for {user}** 📊\n"
         f"Total Trades: **{total_trades}**\n"
         f"Profit: **${total_profit:.2f}**\n"
@@ -123,15 +111,11 @@ async def stats(ctx):
 
 # === COMMAND: !export ===
 @bot.command()
-async def export(ctx):
-    if ctx.channel.id != CHANNEL_ID:
-        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
-        return
-    
+async def export(ctx):  
     channel = bot.get_channel(CHANNEL_ID)                    
     records = sheet.get_all_values()
     if len(records) == 0:
-        await channel.send("⚠️ No data to export.")
+        await ctx.send("⚠️ No data to export.")
         return
 
     # Save as CSV
@@ -141,7 +125,7 @@ async def export(ctx):
         writer.writerows(records)
 
     # Send file to Discord
-    await channel.send(f"📂 {len(records)-1} logs:", file=discord.File(filename))
+    await ctx.send(f"📂 {len(records)-1} logs:", file=discord.File(filename))
 
     # Print to console
     print(f"[EXPORT] Exported {len(records)} rows to {filename}")
