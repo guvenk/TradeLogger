@@ -74,9 +74,12 @@ async def stats(ctx):
 
     user = str(ctx.author)  # Discord username#discriminator
     total_trades = 0
-    total_profit = 0.0
+    net = 0.0
     total_perc = 0.0
     wins = 0
+    total_profit = 0.0
+    total_loss = 0.0
+    profit_factor = 0.0
 
     for row in data:
         try:
@@ -84,10 +87,13 @@ async def stats(ctx):
             if row_user == user:
                 profit = float(row[3])  # Profit Amount column
                 total_perc += float(row[2]) # Profit % column
-                total_profit += profit
+                net += profit
                 total_trades += 1
                 if profit > 0:
                     wins += 1
+                    total_profit += profit
+                else
+                    total_loss += profit
         except (ValueError, IndexError):
             continue
 
@@ -96,11 +102,15 @@ async def stats(ctx):
         return
 
     win_rate = (wins / total_trades * 100) if total_trades > 0 else 0.0
-
+    profit_factor = total_profit / total_loss
+    
     await ctx.send(
         f"📊 **Statistics for {user}** 📊\n"
         f"Total Trades: **{total_trades}**\n"
-        f"Profit: **${total_profit:.2f}**\n"
+        f"Total Profit: **${total_profit:.2f}**\n"
+        f"Total Loss: **${total_loss:.2f}**\n"
+        f"Net: **${net:.2f}**\n"
+        f"Profit Factor: **{profit_factor:.2f}**\n"
         f"Percentage: **{total_perc:.2f}%**\n"
         f"Win Rate: **{win_rate:.2f}%**"
     )
