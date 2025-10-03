@@ -46,7 +46,7 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
     Example usage:
     !log 1.2 120 BTC long
     """
-    now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M")
     user = str(ctx.author)
 
     # Save to Google Sheets
