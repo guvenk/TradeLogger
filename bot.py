@@ -94,7 +94,7 @@ async def stats(ctx):
                     total_profit += profit
                 else:
                     total_loss += profit
-                    
+
         except (ValueError, IndexError):
             continue
 
@@ -103,7 +103,7 @@ async def stats(ctx):
         return
 
     win_rate = (wins / total_trades * 100) if total_trades > 0 else 0.0
-    profit_factor = total_profit / total_loss
+    profit_factor = total_profit / total_loss * -1
     
     await ctx.send(
         f"📊 **Statistics for {user}** 📊\n"
