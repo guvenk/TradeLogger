@@ -20,9 +20,24 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", sco
 client = gspread.authorize(creds)
 sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
 
+
 # === DISCORD BOT SETUP ===
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+
+# Restrict all commands to a single channel
+@bot.check
+async def restrict_to_channel(ctx):
+    return ctx.channel.id == CHANNEL_ID
+
+
+# === Global Error Handler ===
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CheckFailure):
+        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
+
 
 # === COMMAND: !log ===
 @bot.command()
@@ -42,11 +57,12 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
     await channel.send(
         f"✅ Log saved:\n"
         f"**User:** {user}\n"
-        f"**Profit:** {percent}%\n"
+        f"**Percentage:** {percent}%\n"
         f"**Profit:** ${profit}\n"
         f"**Coin:** {coin.upper()}\n"
         f"**Direction:** {direction.capitalize()}"
     )
+
 
 # === COMMAND: !stats ===
 @bot.command()
@@ -57,7 +73,7 @@ async def stats(ctx):
     records = sheet.get_all_values()
 
     if len(records) <= 1:
-        await ctx.send("⚠️ No trades logged yet.")
+        await channel.send("⚠️ No trades logged yet.")
         return
 
     # Skip header row
@@ -83,12 +99,12 @@ async def stats(ctx):
             continue
 
     if total_trades == 0:
-        await ctx.send(f"⚠️ No trades logged yet for **{user}**.")
+        await channel.send(f"⚠️ No trades logged yet for **{user}**.")
         return
 
     win_rate = (wins / total_trades * 100) if total_trades > 0 else 0.0
 
-    await ctx.send(
+    await channel.send(
         f"📊 **Statistics for {user}** 📊\n"
         f"Total Trades: **{total_trades}**\n"
         f"Profit: **${total_profit:.2f}**\n"
@@ -96,12 +112,13 @@ async def stats(ctx):
         f"Win Rate: **{win_rate:.2f}%**"
     )
 
+
 # === COMMAND: !export ===
 @bot.command()
 async def export(ctx):
     records = sheet.get_all_values()
     if len(records) == 0:
-        await ctx.send("⚠️ No data to export.")
+        await channel.send("⚠️ No data to export.")
         return
 
     # Save as CSV
@@ -111,7 +128,7 @@ async def export(ctx):
         writer.writerows(records)
 
     # Send file to Discord
-    await ctx.send(f"📂 {len(records)} logs:", file=discord.File(filename))
+    await channel.send(f"📂 {len(records)} logs:", file=discord.File(filename))
 
     # Print to console
     print(f"[EXPORT] Exported {len(records)} rows to {filename}")
