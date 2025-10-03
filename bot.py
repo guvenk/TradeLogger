@@ -34,8 +34,7 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
     # Save to Google Sheets
     sheet.append_row([now, user, percent, profit, coin.upper(), direction.capitalize()])
 
-    # Confirmation
-    channel = bot.get_channel(CHANNEL_ID)
+    # channel = bot.get_channel(CHANNEL_ID)
     await ctx.send(
         f"✅ Log saved:\n"
         f"**User:** {user}\n"
@@ -48,7 +47,6 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
 # === COMMAND: !delete ===
 @bot.command()
 async def delete(ctx):
-    channel = bot.get_channel(CHANNEL_ID)
     records = sheet.get_all_values()
 
     if len(records) <= 1:  # Assuming row 1 is header
@@ -65,7 +63,6 @@ async def delete(ctx):
 # === COMMAND: !stats ===
 @bot.command()
 async def stats(ctx):
-    channel = bot.get_channel(CHANNEL_ID)
     records = sheet.get_all_values()
 
     if len(records) <= 1:
@@ -111,8 +108,7 @@ async def stats(ctx):
 
 # === COMMAND: !export ===
 @bot.command()
-async def export(ctx):  
-    channel = bot.get_channel(CHANNEL_ID)                    
+async def export(ctx):
     records = sheet.get_all_values()
     if len(records) == 0:
         await ctx.send("⚠️ No data to export.")
