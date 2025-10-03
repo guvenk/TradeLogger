@@ -92,8 +92,9 @@ async def stats(ctx):
                 if profit > 0:
                     wins += 1
                     total_profit += profit
-                else
+                else:
                     total_loss += profit
+                    
         except (ValueError, IndexError):
             continue
 
