@@ -91,8 +91,8 @@ async def stats(ctx):
     await ctx.send(
         f"📊 **Statistics for {user}** 📊\n"
         f"Total Trades: **{total_trades}**\n"
-        f"Total Profit: **${total_profit:.2f}**\n"
-        f"Total Profit %: **{total_perc:.2f}%**\n"
+        f"Profit: **${total_profit:.2f}**\n"
+        f"Percentage: **{total_perc:.2f}%**\n"
         f"Win Rate: **{win_rate:.2f}%**"
     )
 
