@@ -25,27 +25,13 @@ sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-
-# Restrict all commands to a single channel
-@bot.check
-async def restrict_to_channel(ctx):
-    return ctx.channel.id == CHANNEL_ID
-
-
-# === Global Error Handler ===
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CheckFailure):
-        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
-
-
 # === COMMAND: !log ===
 @bot.command()
 async def log(ctx, percent: float, profit: float, coin: str, direction: str):
-    """
-    Example usage:
-    !log 1.2 120 BTC long
-    """
+    if ctx.channel.id != CHANNEL_ID:
+        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
+        return
+
     now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M")
     user = str(ctx.author)
 
@@ -63,13 +49,34 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
         f"**Direction:** {direction.capitalize()}"
     )
 
+# === COMMAND: !delete ===
+@bot.command()
+async def delete(ctx):
+    if ctx.channel.id != CHANNEL_ID:
+        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
+        return
+
+    channel = bot.get_channel(CHANNEL_ID)  # always send messages to this channel
+    records = sheet.get_all_values()
+
+    if len(records) <= 1:  # Assuming row 1 is header
+        await channel.send("⚠️ No records to delete.")
+        return
+
+    try:
+        sheet.delete_row(len(records))
+        await channel.send("✅ Last record deleted successfully.")
+    except Exception as e:
+        await channel.send(f"⚠️ Failed to delete the last record: {e}")
+
 
 # === COMMAND: !stats ===
 @bot.command()
 async def stats(ctx):
-    """
-    Shows total profit, win rate, and number of trades for the user
-    """
+    if ctx.channel.id != CHANNEL_ID:
+        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
+        return
+
     records = sheet.get_all_values()
 
     if len(records) <= 1:
@@ -116,6 +123,10 @@ async def stats(ctx):
 # === COMMAND: !export ===
 @bot.command()
 async def export(ctx):
+    if ctx.channel.id != CHANNEL_ID:
+        await ctx.send(f"⚠️ Commands are only allowed in the designated channel.")
+        return
+                    
     records = sheet.get_all_values()
     if len(records) == 0:
         await channel.send("⚠️ No data to export.")
