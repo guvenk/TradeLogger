@@ -141,7 +141,7 @@ async def export(ctx):
         writer.writerows(records)
 
     # Send file to Discord
-    await channel.send(f"📂 {len(records)} logs:", file=discord.File(filename))
+    await channel.send(f"📂 {len(records)-1} logs:", file=discord.File(filename))
 
     # Print to console
     print(f"[EXPORT] Exported {len(records)} rows to {filename}")
