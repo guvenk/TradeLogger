@@ -53,11 +53,21 @@ async def delete(ctx):
     if len(records) <= 1:
         await ctx.send("⚠️ No records to delete.")
         return
-    try:
-        sheet.delete_rows(len(records))
-        await ctx.send("✅ Last record deleted successfully.")
-    except Exception as e:
-        await ctx.send(f"⚠️ Failed to delete the last record: {e}")
+
+    user = str(ctx.author)
+    # Find the last row for this user (searching from the end)
+    for i in range(len(records)-1, 0, -1):
+        if records[i][1] == user:  # User column
+            try:
+                sheet.delete_rows(i + 1)  # Google Sheets is 1-indexed
+                await ctx.send(f"✅ Last record for **{user}** deleted successfully.")
+                return
+            except Exception as e:
+                await ctx.send(f"⚠️ Failed to delete the last record: {e}")
+                return
+
+    await ctx.send(f"⚠️ No records found for **{user}** to delete.")
+
 
 # === COMMAND: !stats ===
 @bot.command()
