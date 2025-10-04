@@ -13,9 +13,12 @@ from keep_alive import keep_alive
 keep_alive()
 
 # === CONFIG ===
-TOKEN = "MTQyMzM4MDIxMzgyNzM3MTA0OA.Gawy1B.XhNzzqN-NuArU_-ArO-ofw32Qo6VaVt_SRir04" # Discord Bot Token
+TOKEN = os.getenv("DISCORD_BOT_TOKEN")  # <-- Bot token from environment variable
 GOOGLE_SHEET_ID = "1_-mQlKfE-jc1sw8KrAcmm57_W-BviApyj4A1lplvbDk"
 CHANNEL_ID = 1423319542310109244
+
+if not TOKEN:
+    raise ValueError("⚠️ Missing environment variable: DISCORD_BOT_TOKEN")
 
 # === GOOGLE SHEETS SETUP ===
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -51,11 +54,10 @@ async def delete(ctx):
         return
 
     user = str(ctx.author)
-    # Find the last row for this user (searching from the end)
     for i in range(len(records)-1, 0, -1):
-        if records[i][1] == user:  # User column
+        if records[i][1] == user:
             try:
-                sheet.delete_rows(i + 1)  # Google Sheets is 1-indexed
+                sheet.delete_rows(i + 1)
                 await ctx.send(f"✅ Last record for **{user}** deleted successfully.")
                 return
             except Exception as e:
@@ -63,7 +65,6 @@ async def delete(ctx):
                 return
 
     await ctx.send(f"⚠️ No records found for **{user}** to delete.")
-
 
 # === COMMAND: !stats ===
 @bot.command()
