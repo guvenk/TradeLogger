@@ -7,10 +7,6 @@ import csv
 import os
 import io
 import pandas as pd
-import matplotlib
-
-# --- HEADLESS MODE for Render ---
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from keep_alive import keep_alive
