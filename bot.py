@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use("Agg")  # Use a headless backend
+import matplotlib.pyplot as plt
 import discord
 from discord.ext import commands
 from datetime import datetime, UTC
@@ -7,7 +10,7 @@ import csv
 import os
 import io
 import pandas as pd
-import matplotlib.pyplot as plt
+
 
 from keep_alive import keep_alive
 keep_alive()
