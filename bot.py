@@ -9,8 +9,13 @@ import io
 import pandas as pd
 import matplotlib.pyplot as plt
 import json
+from dotenv import load_dotenv
+
 from keep_alive import keep_alive
 keep_alive()
+
+# Load environment variables from .env file
+load_dotenv()
 
 # === CONFIG ===
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")  # <-- Bot token from environment variable
