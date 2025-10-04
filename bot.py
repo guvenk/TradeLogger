@@ -22,7 +22,13 @@ if not TOKEN:
 
 # === GOOGLE SHEETS SETUP ===
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+# Load Google credentials from environment variable
+google_creds_json = os.getenv("GOOGLE_CREDS_JSON")
+if not google_creds_json:
+    raise ValueError("⚠️ Missing environment variable: GOOGLE_CREDS_JSON")
+
+creds_dict = json.loads(google_creds_json)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
 
