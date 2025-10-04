@@ -1,6 +1,3 @@
-import matplotlib
-matplotlib.use("Agg")  # Use a headless backend
-import matplotlib.pyplot as plt
 import discord
 from discord.ext import commands
 from datetime import datetime, UTC
@@ -10,7 +7,11 @@ import csv
 import os
 import io
 import pandas as pd
+import matplotlib
 
+# --- HEADLESS MODE for Render ---
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from keep_alive import keep_alive
 keep_alive()
@@ -26,7 +27,6 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", sco
 client = gspread.authorize(creds)
 sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
 
-
 # === DISCORD BOT SETUP ===
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -36,11 +36,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def log(ctx, percent: float, profit: float, coin: str, direction: str):
     now = datetime.now(UTC).strftime("%Y-%m-%d %H:%M")
     user = str(ctx.author)
-
-    # Save to Google Sheets
     sheet.append_row([now, user, percent, profit, coin.upper(), direction.capitalize()])
-
-    # channel = bot.get_channel(CHANNEL_ID)
     await ctx.send(
         f"✅ Log saved:\n"
         f"**User:** {user}\n"
@@ -54,45 +50,33 @@ async def log(ctx, percent: float, profit: float, coin: str, direction: str):
 @bot.command()
 async def delete(ctx):
     records = sheet.get_all_values()
-
-    if len(records) <= 1:  # Assuming row 1 is header
+    if len(records) <= 1:
         await ctx.send("⚠️ No records to delete.")
         return
-
     try:
         sheet.delete_rows(len(records))
         await ctx.send("✅ Last record deleted successfully.")
     except Exception as e:
         await ctx.send(f"⚠️ Failed to delete the last record: {e}")
 
-
 # === COMMAND: !stats ===
 @bot.command()
 async def stats(ctx):
     records = sheet.get_all_values()
-
     if len(records) <= 1:
         await ctx.send("⚠️ No trades logged yet.")
         return
 
-    # Skip header row
-    data = records[1:]  
-
-    user = str(ctx.author)  # Discord username#discriminator
-    total_trades = 0
-    net = 0.0
-    total_perc = 0.0
-    wins = 0
-    total_profit = 0.0
-    total_loss = 0.0
-    profit_factor = 0.0
+    data = records[1:]
+    user = str(ctx.author)
+    total_trades = net = total_perc = wins = total_profit = total_loss = 0.0
 
     for row in data:
         try:
-            row_user = row[1]  # "User" column (second column in log)
+            row_user = row[1]
             if row_user == user:
-                profit = float(row[3])  # Profit Amount column
-                total_perc += float(row[2]) # Profit % column
+                profit = float(row[3])
+                total_perc += float(row[2])
                 net += profit
                 total_trades += 1
                 if profit > 0:
@@ -100,7 +84,6 @@ async def stats(ctx):
                     total_profit += profit
                 else:
                     total_loss += profit
-
         except (ValueError, IndexError):
             continue
 
@@ -108,9 +91,9 @@ async def stats(ctx):
         await ctx.send(f"⚠️ No trades logged yet for **{user}**.")
         return
 
-    win_rate = (wins / total_trades * 100) if total_trades > 0 else 0.0
-    profit_factor = total_profit / total_loss * -1
-    
+    win_rate = (wins / total_trades * 100) if total_trades else 0.0
+    profit_factor = total_profit / total_loss * -1 if total_loss != 0 else 0.0
+
     await ctx.send(
         f"📊 **Statistics for {user}** 📊\n"
         f"Total Trades: **{total_trades}**\n"
@@ -122,7 +105,6 @@ async def stats(ctx):
         f"Win Rate: **{win_rate:.2f}%**"
     )
 
-
 # === COMMAND: !export ===
 @bot.command()
 async def export(ctx):
@@ -131,19 +113,13 @@ async def export(ctx):
         await ctx.send("⚠️ No data to export.")
         return
 
-    # Save as CSV
     filename = "trade_logs.csv"
     with open(filename, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerows(records)
 
-    # Send file to Discord
     await ctx.send(f"📂 {len(records)-1} logs:", file=discord.File(filename))
-
-    # Print to console
     print(f"[EXPORT] Exported {len(records)} rows to {filename}")
-
-    # Clean up file (optional)
     os.remove(filename)
 
 # === COMMAND: !equity ===
@@ -156,8 +132,6 @@ async def equity(ctx):
 
     df = pd.DataFrame(records[1:], columns=records[0])
     df.columns = df.columns.str.strip().str.replace("%", "Pct").str.replace(" ", "_")
-
-    # Filter for the user
     user = str(ctx.author)
     user_df = df[df["User"] == user]
 
@@ -184,7 +158,6 @@ async def equity(ctx):
     plt.close()
 
     await ctx.send(file=discord.File(buf, filename="equity_curve.png"))
-
 
 # === RUN BOT ===
 bot.run(TOKEN)
