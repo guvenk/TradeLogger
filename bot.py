@@ -5,6 +5,9 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import csv
 import os
+import io
+import pandas as pd
+import matplotlib.pyplot as plt
 
 from keep_alive import keep_alive
 keep_alive()
@@ -139,6 +142,45 @@ async def export(ctx):
 
     # Clean up file (optional)
     os.remove(filename)
+
+# === COMMAND: !equity ===
+@bot.command()
+async def equity(ctx):
+    records = sheet.get_all_values()
+    if len(records) <= 1:
+        await ctx.send("⚠️ No trade data available.")
+        return
+
+    df = pd.DataFrame(records[1:], columns=records[0])
+    df.columns = df.columns.str.strip().str.replace("%", "Pct").str.replace(" ", "_")
+
+    # Filter for the user
+    user = str(ctx.author)
+    user_df = df[df["User"] == user]
+
+    if user_df.empty:
+        await ctx.send(f"⚠️ No trades found for **{user}**.")
+        return
+
+    user_df["Date"] = pd.to_datetime(user_df["Date"], errors="coerce")
+    user_df = user_df.sort_values("Date")
+    user_df["Profit_Amount"] = pd.to_numeric(user_df["Profit_Amount"], errors="coerce")
+    user_df["Cumulative_Profit"] = user_df["Profit_Amount"].cumsum()
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(user_df["Date"], user_df["Cumulative_Profit"], color="royalblue", linewidth=2)
+    plt.title(f"Equity Curve - {user}", fontsize=16)
+    plt.xlabel("Date")
+    plt.ylabel("Cumulative Profit ($)")
+    plt.grid(True, linestyle="--", alpha=0.5)
+    plt.tight_layout()
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close()
+
+    await ctx.send(file=discord.File(buf, filename="equity_curve.png"))
 
 
 # === RUN BOT ===
