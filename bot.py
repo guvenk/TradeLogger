@@ -8,14 +8,13 @@ import os
 import io
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import json
 from keep_alive import keep_alive
 keep_alive()
 
 # === CONFIG ===
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")  # <-- Bot token from environment variable
 GOOGLE_SHEET_ID = "1_-mQlKfE-jc1sw8KrAcmm57_W-BviApyj4A1lplvbDk"
-CHANNEL_ID = 1423319542310109244
 
 if not TOKEN:
     raise ValueError("⚠️ Missing environment variable: DISCORD_BOT_TOKEN")
