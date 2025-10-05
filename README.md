@@ -1,4 +1,4 @@
-# Discord Trading Logger Bot
+# Discord Trade Logger Bot
 
 ![Banner](https://i.imgur.com/JT8oblS.png)
 
