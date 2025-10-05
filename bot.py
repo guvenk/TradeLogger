@@ -86,7 +86,8 @@ async def stats(ctx):
 
     data = records[1:]
     user = str(ctx.author)
-    total_trades = net = total_perc = wins = total_profit = total_loss = 0.0
+    total_trades = 0
+    net = total_perc = wins = total_profit = total_loss = 0.0
 
     for row in data:
         try:

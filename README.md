@@ -22,8 +22,8 @@ A Discord bot to log trades, track statistics, visualize equity curves, and expo
 
 ### 1. Clone the repository
 ```bash
-git clone <your-repo-url>
-cd <your-repo-folder>
+git clone https://github.com/guvenk/TradeLogger.git
+cd TradeLogger
 ```
 
 ### 2. Install dependencies
