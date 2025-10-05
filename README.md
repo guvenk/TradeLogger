@@ -15,5 +15,5 @@ A Discord bot to log trades, track statistics, visualize equity curves, and expo
 - Uses Google Sheets for storage.  
 - Fully environment-variable driven for secure credentials management.
 
-### Install Bot with following url
-- https://discord.com/oauth2/authorize?client_id=1423380213827371048&permissions=68608&integration_type=0&scope=bot
+### Setup bot with following url
+- [Setup link](https://discord.com/oauth2/authorize?client_id=1423380213827371048&permissions=68608&integration_type=0&scope=bot)
