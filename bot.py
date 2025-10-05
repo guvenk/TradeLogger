@@ -127,18 +127,27 @@ async def stats(ctx):
 @bot.command()
 async def export(ctx):
     records = sheet.get_all_values()
-    if len(records) == 0:
+    if len(records) <= 1:
         await ctx.send("⚠️ No data to export.")
         return
 
-    filename = "trade_logs.csv"
+    user = str(ctx.author)
+    headers = records[0]
+    user_records = [row for row in records[1:] if row[1] == user]
+
+    if not user_records:
+        await ctx.send(f"⚠️ No logs found for **{user}**.")
+        return
+
+    filename = f"trade_logs_{user.replace('#', '_')}.csv"
     with open(filename, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerows(records)
+        writer.writerow(headers)  # write header
+        writer.writerows(user_records)
 
-    await ctx.send(f"📂 {len(records)-1} logs:", file=discord.File(filename))
-    print(f"[EXPORT] Exported {len(records)} rows to {filename}")
+    await ctx.send(f"📂 Exported {len(user_records)} logs for **{user}**:", file=discord.File(filename))
     os.remove(filename)
+
 
 # === COMMAND: !equity ===
 @bot.command()
