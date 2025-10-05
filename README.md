@@ -63,8 +63,9 @@ Share the sheet with the service account email from your credentials.
 Copy the Google Sheet ID and update the GOOGLE_SHEET_ID variable in your script.
 
 ### 5. Run the Bot
+```bash
 python bot.py
-
+```
 
 The bot will read credentials from the .env file when running locally, or from environment variables on cloud platforms.
 
