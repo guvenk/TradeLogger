@@ -6,16 +6,17 @@ A Discord bot to log trades, track statistics, visualize equity curves, and expo
 
 ## Features
 
-- `!log` — Log a new trade with percentage, profit, coin, and direction.  
-- `!delete` — Delete the last trade entry for a user.  
-- `!stats` — View trade statistics including net profit, win rate, and profit factor.  
-- `!export` — Export all trade logs as a CSV file.  
-- `!equity` — Generate a cumulative profit graph (equity curve) for a user.  
-- Supports multiple users with separate logs.  
-- Uses Google Sheets for storage.  
+- `!log` — Log a new trade with percentage, profit, coin, and direction.
+- `!delete` — Delete the last trade entry for a user.
+- `!stats` — View trade statistics including net profit, win rate, and profit factor.
+- `!export` — Export all trade logs for a user as a CSV file.
+- `!equity` — Generate a cumulative profit graph (equity curve) for a user.
+
+- Supports multiple users with separate logs.
+- Uses Google Sheets for storage.
 - Fully environment-variable driven for secure credentials management.
 
-### Setup bot with following url
+### Add this bot to your discord server
 - [Setup link](https://discord.com/oauth2/authorize?client_id=1423380213827371048&permissions=68608&integration_type=0&scope=bot)
 
 ## Quick Start
