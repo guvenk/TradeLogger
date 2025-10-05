@@ -17,3 +17,7 @@ A Discord bot to log trades, track statistics, visualize equity curves, and expo
 
 ### Setup bot with following url
 - [Setup link](https://discord.com/oauth2/authorize?client_id=1423380213827371048&permissions=68608&integration_type=0&scope=bot)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
