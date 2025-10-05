@@ -1,6 +1,6 @@
 # Discord Trading Logger Bot
 
-![Banner](https://imgur.com/a/Lyen3ZK)
+![Banner](https://i.imgur.com/JT8oblS.png)
 
 A Discord bot to log trades, track statistics, visualize equity curves, and export trading data using Google Sheets. Configurable via environment variables for secure deployment locally or on cloud platforms.
 
