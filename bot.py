@@ -1,17 +1,18 @@
-import discord
 from discord.ext import commands
 from datetime import datetime, UTC
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from dotenv import load_dotenv
+from keep_alive import keep_alive
+import discord
+import gspread
 import csv
 import os
 import io
+import json
 import pandas as pd
 import matplotlib.pyplot as plt
-import json
-from dotenv import load_dotenv
+import numpy as np
 
-from keep_alive import keep_alive
 keep_alive()
 
 # Load environment variables from .env file
@@ -88,6 +89,7 @@ async def stats(ctx):
     user = str(ctx.author)
     total_trades = 0
     net = total_perc = wins = total_profit = total_loss = 0.0
+    profits = []
 
     for row in data:
         try:
@@ -97,6 +99,7 @@ async def stats(ctx):
                 total_perc += float(row[2])
                 net += profit
                 total_trades += 1
+                profits.append(profit)
                 if profit > 0:
                     wins += 1
                     total_profit += profit
@@ -110,15 +113,23 @@ async def stats(ctx):
         return
 
     win_rate = (wins / total_trades * 100) if total_trades else 0.0
-    profit_factor = total_profit / total_loss * -1 if total_loss != 0 else 0.0
+    profit_factor = (total_profit / total_loss * -1) if total_loss != 0 else 0.0
+
+    # === Sortino Ratio Calculation ===
+    returns = np.array(profits)
+    avg_return = np.mean(returns)
+    downside_returns = returns[returns < 0]
+    downside_std = np.std(downside_returns) if len(downside_returns) > 0 else 0
+    sortino_ratio = avg_return / downside_std if downside_std != 0 else 0.0
 
     await ctx.send(
         f"📊 **Statistics for {user}** 📊\n"
         f"Total Trades: **{total_trades}**\n"
         f"Total Profit: **${total_profit:.2f}**\n"
-        f"Total Loss: **-${total_loss*-1:.2f}**\n"
+        f"Total Loss: **-${total_loss * -1:.2f}**\n"
         f"Net: **${net:.2f}**\n"
         f"Profit Factor: **{profit_factor:.2f}**\n"
+        f"Sortino Ratio: **{sortino_ratio:.2f}**\n"
         f"Percentage: **{total_perc:.2f}%**\n"
         f"Win Rate: **{win_rate:.2f}%**"
     )
@@ -147,7 +158,6 @@ async def export(ctx):
 
     await ctx.send(f"📂 Exported {len(user_records)} logs for **{user}**:", file=discord.File(filename))
     os.remove(filename)
-
 
 # === COMMAND: !equity ===
 @bot.command()
@@ -222,7 +232,6 @@ async def note(ctx, *, note_text: str):
             return
 
     await ctx.send(f"⚠️ No previous log found for **{user}** to attach a note.")
-
 
 # === RUN BOT ===
 bot.run(TOKEN)
