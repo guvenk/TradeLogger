@@ -128,9 +128,9 @@ async def stats(ctx):
         f"Total Profit: **${total_profit:.2f}**\n"
         f"Total Loss: **-${total_loss * -1:.2f}**\n"
         f"Net: **${net:.2f}**\n"
+        f"Percentage: **{total_perc:.2f}%**\n"
         f"Profit Factor: **{profit_factor:.2f}**\n"
         f"Sortino Ratio: **{sortino_ratio:.2f}**\n"
-        f"Percentage: **{total_perc:.2f}%**\n"
         f"Win Rate: **{win_rate:.2f}%**"
     )
 
