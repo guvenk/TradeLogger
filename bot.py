@@ -196,26 +196,33 @@ async def note(ctx, *, note_text: str):
         return
 
     user = str(ctx.author)
-    # find the last record for this user
+
+    # Find the last record for this user
     for i in range(len(records) - 1, 0, -1):
         if records[i][1] == user:
             row_index = i + 1  # Google Sheets rows are 1-indexed
             existing_row = records[i]
 
-            # if Notes column doesn't exist, add header
+            # Ensure 'Note' header exists
             if len(records[0]) < 7:
                 sheet.update_cell(1, 7, "Note")
 
-            # ensure row has at least 7 columns
+            # Pad row if necessary
             while len(existing_row) < 7:
                 existing_row.append("")
 
-            # update note cell
+            # Add note
             sheet.update_cell(row_index, 7, note_text)
-            await ctx.send(f"📝 Note added to your last log for **{user}**")
+
+            # Extract coin and direction from last log
+            coin = existing_row[4] if len(existing_row) > 4 else "N/A"
+            direction = existing_row[5] if len(existing_row) > 5 else "N/A"
+
+            await ctx.send(f"📝 Note added to your last log: **{coin} {direction}**")
             return
 
     await ctx.send(f"⚠️ No previous log found for **{user}** to attach a note.")
+
 
 # === RUN BOT ===
 bot.run(TOKEN)
