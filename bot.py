@@ -12,6 +12,7 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import requests
 
 keep_alive()
 
@@ -27,7 +28,6 @@ if not TOKEN:
 
 # === GOOGLE SHEETS SETUP ===
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-# Load Google credentials from environment variable
 google_creds_json = os.getenv("GOOGLE_CREDS_JSON")
 if not google_creds_json:
     raise ValueError("⚠️ Missing environment variable: GOOGLE_CREDS_JSON")
@@ -40,6 +40,19 @@ sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
 # === DISCORD BOT SETUP ===
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
+
+# === COMMAND: !wakeup ===
+@bot.command()
+async def wakeup(ctx):
+    url = "https://trade-logger-lfm9.onrender.com"
+    try:
+        response = requests.get(url, timeout=60)
+        if response.status_code == 200:
+            await ctx.send("🌐 The trade logger is awake and responding!")
+        else:
+            await ctx.send(f"⚠️ Wakeup request returned status code: {response.status_code}")
+    except Exception as e:
+        await ctx.send(f"❌ Failed to reach the trade logger: {e}")
 
 # === COMMAND: !log ===
 @bot.command()
