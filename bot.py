@@ -41,19 +41,6 @@ sheet = client.open_by_key(GOOGLE_SHEET_ID).sheet1
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# === COMMAND: !wakeup ===
-@bot.command()
-async def wakeup(ctx):
-    url = "https://trade-logger-lfm9.onrender.com"
-    try:
-        response = requests.get(url, timeout=60)
-        if response.status_code == 200:
-            await ctx.send("🌐 The trade logger is awake and responding!")
-        else:
-            await ctx.send(f"⚠️ Wakeup request returned status code: {response.status_code}")
-    except Exception as e:
-        await ctx.send(f"❌ Failed to reach the trade logger: {e}")
-
 # === COMMAND: !log ===
 @bot.command()
 async def log(ctx, percent: float, profit: float, coin: str, direction: str):
